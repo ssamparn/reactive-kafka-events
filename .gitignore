@@ -8,7 +8,10 @@ workspace/kafka-setup/docker-compose/data
 .idea/modules.xml
 .idea/jarRepositories.xml
 .idea/compiler.xml
+.idea/misc.xml
+.idea/vcs.xml
 .idea/libraries/
+.idea/codeStyles/
 *.iws
 *.iml
 *.ipr
