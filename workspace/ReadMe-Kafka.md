@@ -73,9 +73,9 @@ $ kafka-topics.sh --bootstrap-server localhost:9092 --topic order-events --creat
 $ kafka-topics.sh --bootstrap-server localhost:9092 --topic order-events --alter --partitions 4
 ```
 
-#### Topic with replicaiton factor
+#### Create topic with replicaiton factor
 ```bash
-$ kafka-topics.sh --bootstrap-server localhost:9092 --topic order-events --create --replication-factor 3
+$ kafka-topics.sh --bootstrap-server localhost:9092 --topic order-events --create --partitions 2 --replication-factor 3
 ```
 ## Producer
 
