@@ -1,4 +1,4 @@
-package org.reactive.kafka.reactivekafkaproducerconsumer.sec08;
+package org.reactive.kafka.reactivekafkaproducerconsumer.sec09;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -14,7 +14,8 @@ import java.time.Duration;
 import java.util.Map;
 
 /*
- goal: Cluster demo - to produce and consume events with 3 replicas
+   goal: receiveAutoAck with concatMap
+
 */
 public class KafkaProducer {
     private static final Logger log = LoggerFactory.getLogger(KafkaProducer.class);
@@ -22,15 +23,14 @@ public class KafkaProducer {
     public static void main(String[] args) {
 
         var producerConfig = Map.<String, Object>of(
-                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:8081", // Using kafka cluster
+                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092", // Using single node kafka
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class
         );
 
         var producerOptions = SenderOptions.<String, String>create(producerConfig);
 
-        var messageFlux = Flux.interval(Duration.ofMillis(500))
-                .take(10_000)
+        var messageFlux = Flux.range(1, 100)
                 .map(i -> new ProducerRecord<>("order-events", i.toString(), "order-"+i))
                 .map(pr -> SenderRecord.create(pr, pr.key()));
 

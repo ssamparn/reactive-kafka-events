@@ -45,6 +45,7 @@ $ docker exec -it reactive-kafka bash
 
 #### Note: we assume that directory which contains 'kafka-topics.sh' is included in the PATH
 ```bash
+$ kafka-topics.sh --bootstrap-server localhost:9092 --topic <topic-name> --create
 $ kafka-topics.sh --bootstrap-server localhost:9092 --topic hello-world --create
 ```
 
