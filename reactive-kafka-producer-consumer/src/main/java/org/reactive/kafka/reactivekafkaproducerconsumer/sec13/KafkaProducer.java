@@ -1,4 +1,4 @@
-package org.reactive.kafka.reactivekafkaproducerconsumer.sec10;
+package org.reactive.kafka.reactivekafkaproducerconsumer.sec13;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -13,32 +13,31 @@ import reactor.kafka.sender.SenderRecord;
 import java.util.Map;
 
 /*
-   goal: receiveAutoAck with flatMap - parallel
-
+   error handling demo: dead letter topic
 */
 public class KafkaProducer {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaProducer.class);
 
     public static void main(String[] args) {
-
         var producerConfig = Map.<String, Object>of(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class
         );
 
-        var producerOptions = SenderOptions.<String, String>create(producerConfig);
+        var senderOptions = SenderOptions.<String, String>create(producerConfig);
 
-        var kafkaMessageFlux = Flux.range(1, 100)
-                .map(i -> new ProducerRecord<>("order-events", i.toString(), "order-"+i))
+        var messageFlux = Flux.range(1, 100)
+                .map(i -> new ProducerRecord<>("order-events", i.toString(), "order-" + i))
                 .map(pr -> SenderRecord.create(pr, pr.key()));
 
-        var sender = KafkaSender.create(producerOptions);
+        var sender = KafkaSender.create(senderOptions);
 
-        sender.send(kafkaMessageFlux)
+        sender.send(messageFlux)
                 .doOnNext(r -> log.info("correlation id: {}", r.correlationMetadata()))
                 .doOnComplete(sender::close)
                 .subscribe();
     }
+
 }

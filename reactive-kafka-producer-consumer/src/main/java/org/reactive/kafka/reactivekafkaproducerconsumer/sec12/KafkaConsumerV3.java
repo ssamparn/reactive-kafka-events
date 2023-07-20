@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 /*
-   error handling demo: retry based on error / stop
+   error handling demo: retry based on specific error / stop the consumer based on specific exceptions.
 */
 public class KafkaConsumerV3 {
     private static final Logger log = LoggerFactory.getLogger(KafkaConsumerV3.class);
@@ -51,11 +51,12 @@ public class KafkaConsumerV3 {
                     }
                     var index = ThreadLocalRandom.current().nextInt(1, 20);
                     log.info("key: {}, index: {}, value: {}", r.key(), index, r.value().toString().toCharArray()[index]);
-                    r.receiverOffset().acknowledge();
+                    r.receiverOffset().acknowledge(); // Consumer will acknowledge for successful event consuming.
                 })
                 .retryWhen(retrySpec())
                 .doOnError(ex -> log.error(ex.getMessage()))
                 .onErrorResume(IndexOutOfBoundsException.class, ex -> Mono.fromRunnable(() -> receiverRecord.receiverOffset().acknowledge()))
+                // Consumer will acknowledge if it is recovered from IndexOutOfBoundsException.class
                 .then();
     }
 

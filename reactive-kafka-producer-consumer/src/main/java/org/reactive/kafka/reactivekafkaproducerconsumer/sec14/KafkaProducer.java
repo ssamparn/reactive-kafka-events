@@ -1,7 +1,8 @@
-package org.reactive.kafka.reactivekafkaproducerconsumer.sec10;
+package org.reactive.kafka.reactivekafkaproducerconsumer.sec14;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +14,9 @@ import reactor.kafka.sender.SenderRecord;
 import java.util.Map;
 
 /*
-   goal: receiveAutoAck with flatMap - parallel
-
+   goal: to demo poison pill messages
 */
+
 public class KafkaProducer {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaProducer.class);
@@ -25,20 +26,21 @@ public class KafkaProducer {
         var producerConfig = Map.<String, Object>of(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class
         );
 
-        var producerOptions = SenderOptions.<String, String>create(producerConfig);
+        var senderOptions = SenderOptions.<String, Integer>create(producerConfig);
 
-        var kafkaMessageFlux = Flux.range(1, 100)
-                .map(i -> new ProducerRecord<>("order-events", i.toString(), "order-"+i))
+        var flux = Flux.range(1, 100)
+                .map(i -> new ProducerRecord<>("order-events", i.toString(), i))
                 .map(pr -> SenderRecord.create(pr, pr.key()));
 
-        var sender = KafkaSender.create(producerOptions);
+        var kafkaSender = KafkaSender.create(senderOptions);
 
-        sender.send(kafkaMessageFlux)
+        kafkaSender.send(flux)
                 .doOnNext(r -> log.info("correlation id: {}", r.correlationMetadata()))
-                .doOnComplete(sender::close)
+                .doOnComplete(kafkaSender::close)
                 .subscribe();
     }
+
 }

@@ -12,6 +12,7 @@ import reactor.kafka.sender.SenderRecord;
 
 import java.time.Duration;
 import java.util.Map;
+
 public class KafkaProducer {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaProducer.class);
@@ -26,9 +27,9 @@ public class KafkaProducer {
 
         var senderOptions = SenderOptions.<String, String>create(producerConfig);
 
-        var kafkaMessageFlux = Flux.range(1, 2000)
+        var kafkaMessageFlux = Flux.range(1, 1000)
                 .delayElements(Duration.ofMillis(2))
-                .map(i -> new ProducerRecord<>("order-events", i.toString(), "order-"+i))
+                .map(i -> new ProducerRecord<>("order-events", i.toString(), "order-" + i))
                 .map(pr -> SenderRecord.create(pr, pr.key()));
 
         var sender = KafkaSender.create(senderOptions);

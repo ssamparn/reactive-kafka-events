@@ -61,7 +61,7 @@ $ kafka-topics.sh --bootstrap-server localhost:9092 --topic hello-world --descri
 
 #### Delete a topic
 ```bash
-$ kafka-topics.sh --bootstrap-server localhost:9092 --topic hello-world --delete
+$ kafka-topics.sh --bootstrap-server localhost:9092 --topic order-events --delete
 ```
 
 #### Create topic with partitons

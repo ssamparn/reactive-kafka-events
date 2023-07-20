@@ -13,9 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /*
-   error handling demo: a simple processing issue
+   error handling demo: a simple processing issue with retry. Receiver and Processor in the same pipeline.
 */
-
 public class KafkaConsumerV1 {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaConsumerV1.class);
@@ -37,10 +36,12 @@ public class KafkaConsumerV1 {
         KafkaReceiver.create(options)
                 .receive()
                 .log()
-                .doOnNext(r -> log.info("key: {}, value: {}", r.key(), r.value().toString().toCharArray()[15])) // just for demo
+                .doOnNext(r -> log.info("key: {}, value: {}", r.key(), r.value().toString().toCharArray()[15])) // just for demo we are creating an error situation.
+                // After the error, a cancel signal will be sent upstream and error signal will be sent downstream.
                 .doOnError(ex -> log.error(ex.getMessage()))
                 .doOnNext(r -> r.receiverOffset().acknowledge())
-                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(1)))
+                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(1))) // Even after retrying, the consumer will retry but will not be able to recover from the error situation.
+                // Ideally this should be handled in a separate pipeline. See the implementation of KafkaConsumerV2.
 //                .subscribe(); // for production
                 .blockLast(); // just for demo
     }

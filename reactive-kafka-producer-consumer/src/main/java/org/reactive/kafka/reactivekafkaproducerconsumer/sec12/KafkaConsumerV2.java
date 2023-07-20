@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 /*
-  error handling demo: processing pipeline
+  error handling demo: processing pipeline. Separating Receiver and Processor into separate pipelines.
 */
 public class KafkaConsumerV2 {
 
@@ -43,16 +43,16 @@ public class KafkaConsumerV2 {
                 .subscribe();
     }
 
-    private static Mono<Void> process(ReceiverRecord<Object, Object> receiverRecord){
+    private static Mono<Void> process(ReceiverRecord<Object, Object> receiverRecord) {
         return Mono.just(receiverRecord)
                 .doOnNext(r -> {
                     var index = ThreadLocalRandom.current().nextInt(1, 10);
-                    log.info("key: {}, index: {}, value: {}", r.key(), index, r.value().toString().toCharArray()[index]);
+                    log.info("key: {}, index: {}, value: {}", r.key(), index, r.value().toString().toCharArray()[index]); // randomly creating errors.
                 })
-                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(1)).onRetryExhaustedThrow((spec, signal) -> signal.failure()))
+                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(1)).onRetryExhaustedThrow((spec, signal) -> signal.failure())) // Retry thrice if and when error occurs.
                 .doOnError(ex -> log.error(ex.getMessage()))
-                .doFinally(s -> receiverRecord.receiverOffset().acknowledge())
-                .onErrorComplete()
+                .doFinally(s -> receiverRecord.receiverOffset().acknowledge()) // In both the scenarios (success and failure) consumer will acknowledge to the broker.
+                .onErrorComplete() // In case of error also, we have to emit an onComplete signal.
                 .then();
     }
 }

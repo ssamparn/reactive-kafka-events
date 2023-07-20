@@ -41,11 +41,12 @@ public class KafkaConsumer {
 
         KafkaReceiver.create(consumerOptions)
                 .receive()
-                .groupBy(r -> Integer.parseInt(r.key()) % 5) // just for demo
+                .groupBy(r -> Integer.parseInt(r.key()) % 5) // just for demo. Here all the events with the same modulus will end up in the same flux / thread.
                 // we can also group by r.partition()
-                // r.key().hashCode() % 5
+                // we can also group by the hashcode of the event key. r.key().hashCode() % 5
                 .flatMap(KafkaConsumer::batchProcess) // flatMap() will subscribe to all the publishers at the same time.
-                // Its eager subscription. By default, flatMap can subscribe to 256 subscribers at the same time.
+                // Its eager subscription. By default, flatMap can subscribe to 256 subscribers at the same time. But there is one major problem with subscribing through flatMap(). That is message ordering.
+                // So the solution is to use concatMap() or flatMap() with groupBy if the ordering of the events is important for consumer.
                 .subscribe();
     }
 
@@ -55,6 +56,7 @@ public class KafkaConsumer {
                 .doFirst(() -> log.info("---- mod: {}", flux.key()))
                 .doOnNext(r -> log.info("key: {}, value: {}", r.key(), r.value()))
                 .doOnNext(r -> r.receiverOffset().acknowledge())
+                .then(Mono.delay(Duration.ofSeconds(1)))
                 .then();
     }
 }

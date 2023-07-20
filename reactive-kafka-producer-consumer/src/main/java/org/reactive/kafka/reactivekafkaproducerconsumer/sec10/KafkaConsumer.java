@@ -42,13 +42,14 @@ public class KafkaConsumer {
                 .receiveAutoAck()
                 .log()
                 .flatMap(KafkaConsumer::batchProcess) // flatMap() will subscribe to all the publishers at the same time.
-                // Its eager subscription. By default, flatMap can subscribe to 256 subscribers at the same time.
+                // Its eager subscription. By default, flatMap can subscribe to 256 subscribers at the same time. But this can be configured using a concurrency factor.
                 .subscribe();
     }
 
     private static Mono<Void> batchProcess(Flux<ConsumerRecord<Object, Object>> flux){
         return flux
-                .publishOn(Schedulers.boundedElastic()) // just for demo
+                .publishOn(Schedulers.boundedElastic()) // This is just for demo. In real life scenarios, we might have to make a database operation or call any external APIs.
+                // We can do those operation(s) as part of a separate thread pool.
                 .doFirst(() -> log.info("---- Flux Started ----"))
                 .doOnNext(r -> log.info("key: {}, value: {}", r.key(), r.value()))
                 .then(Mono.delay(Duration.ofSeconds(1)))

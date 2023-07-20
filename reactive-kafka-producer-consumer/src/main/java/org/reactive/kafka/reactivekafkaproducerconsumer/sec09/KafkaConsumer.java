@@ -29,11 +29,13 @@ public class KafkaConsumer {
                 ConsumerConfig.GROUP_ID_CONFIG, "demo-group-123",
                 ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest",
                 ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "1",
-                ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 3 // Default value is 500
+                ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 3 // This is the config which is responsible for consuming the events in batches.
+                // If there are 100 events, then 34 flux will be created.
+                // Default value for MAX_POLL_RECORDS_CONFIG is 500
         );
 
         var receiverOptions = ReceiverOptions.create(consumerConfig)
-                .commitInterval(Duration.ofSeconds(1))
+                .commitInterval(Duration.ofSeconds(1)) // When kafka consumer commits to the broker about acknowledgement, it happens in batches in a periodic manner. Default commit interval is 5 seconds.
                 .subscription(List.of("order-events"));
 
         KafkaReceiver.create(receiverOptions)
