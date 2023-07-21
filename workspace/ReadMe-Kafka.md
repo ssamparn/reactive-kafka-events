@@ -250,3 +250,42 @@ $ kafka-console-consumer.sh \
 --property print.key=true \
 --from-beginning
 ```
+
+### Commands to demo kafka transaction of section 15
+
+```bash
+$ kafka-topics.sh --bootstrap-server localhost:9092 --topic transfer-requests --create
+```
+
+```bash
+$ kafka-topics.sh --bootstrap-server localhost:9092 --topic transaction-events --create
+```
+
+```bash
+$ kafka-console-producer.sh \
+--bootstrap-server localhost:9092 \
+--topic transfer-requests \
+--property key.separator=: \
+--property parse.key=true
+```
+
+#### Console consumer with isolation level
+
+```bash
+$ kafka-console-consumer.sh \
+--bootstrap-server localhost:9092 \
+--topic transaction-events \
+--property print.key=true \
+--isolation-level=read_committed \
+--from-beginning
+```
+
+#### Console consumer without isolation level
+
+```bash
+$ kafka-console-consumer.sh \
+--bootstrap-server localhost:9092 \
+--topic transaction-events \
+--property print.key=true \
+--from-beginning
+```
