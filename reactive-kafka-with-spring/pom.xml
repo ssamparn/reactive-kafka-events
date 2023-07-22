@@ -10,10 +10,11 @@
 	</parent>
 
 	<groupId>org.reactive.kafka</groupId>
-	<artifactId>reactive-kafka-producer-consumer</artifactId>
+	<artifactId>reactive-kafka-with-spring</artifactId>
 	<version>1.0.0</version>
-	<name>Reactive Kafka Events - Producer Consumer</name>
-	<description>Demo project for Spring Boot</description>
+	<name>Reactive Kafka Events - Spring</name>
+
+	<description>Reactive Kafka Events - Spring</description>
 
 	<properties>
 		<java.version>17</java.version>
@@ -34,6 +35,7 @@
 			<artifactId>reactor-kafka</artifactId>
 			<version>${reactor-kafka.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -78,4 +80,5 @@
 			</plugin>
 		</plugins>
 	</build>
+
 </project>

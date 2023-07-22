@@ -7,16 +7,14 @@
   <version>1.0.0</version>
   <packaging>pom</packaging>
 
-  <name>Reactive Kafka Events - Learning</name>
+  <name>Reactive Kafka Events - Parent</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <dependencies>
-  </dependencies>
-
   <modules>
     <module>reactive-kafka-producer-consumer</module>
+    <module>reactive-kafka-with-spring</module>
   </modules>
 </project>

@@ -119,7 +119,7 @@ $ kafka-console-consumer.sh \
 ```bash
 $ kafka-console-producer.sh \
 --bootstrap-server localhost:9092 \
---topic hello-world \
+--topic order-events \
 --property key.separator=: \
 --property parse.key=true
 ```
