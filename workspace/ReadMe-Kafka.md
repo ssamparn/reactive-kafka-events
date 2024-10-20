@@ -1,4 +1,3 @@
-
 # Kafka SetUp
 
 ## Build the kafka image from docker file.
@@ -27,7 +26,7 @@ $ docker run ssamantr/reactive-kafka
 #### Navigate to /workspace/kafka-setup/docker-compose directory
 
 ```bash
-$ docker-compose up
+$ docker compose up
 ```
 ```bash
 $ docker ps

@@ -1,5 +1,3 @@
----
-version: "3.8"
 services:
   kafka1:
     image: ssamantr/reactive-kafka:latest
